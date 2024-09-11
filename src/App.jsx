@@ -1,37 +1,43 @@
 import { useEffect, useState } from "react";
-import Timer from "./components/Timer"
+import Timer from "./components/Timer";
 import ControlButtons from "./components/ControlButtons";
 
 function App() {
-  const [start, setStart] = useState(false);
-  // const [hours, setHours] = useState(0);
-  // const [minutes, setMinutes] = useState(0);
+  const [isRunning, setIsRunning] = useState(false);
   const [seconds, setSeconds] = useState(0);
-  const [timer, setTimer] = useState(null);
+  const [timerInterval, setTimerInterval] = useState(null);
 
   const handleStart = () => {
-    setStart(true);
-    const interval = setInterval(() => {
-      setSeconds((prevSeconds) => prevSeconds - 1);
+    if (seconds === 0) {
+      return;
+    }
+    setIsRunning(true);
+    const id = setInterval(() => {
+        setSeconds((prevSeconds) => prevSeconds - 1);
     }, 1000);
-    setTimer(interval);
+    setTimerInterval(id);
   };
 
   const handleStop = () => {
-    setStart(false);
-    clearInterval(timer);
-    setTimer(null);
+    setIsRunning(false);
+    clearInterval(timerInterval);
+    setTimerInterval(null);
   };
 
   const handleReset = () => {
     setSeconds(0);
   };
 
+  useEffect(() => {
+  if (seconds==0){
+    handleStop()
+  }
+  }, [seconds])
   return (
     <div className="flex justify-center h-screen w-full flex-col">
-      <Timer seconds={seconds} setSeconds={setSeconds}/>
+      <Timer seconds={seconds} setSeconds={setSeconds} />
       <ControlButtons
-        start={start}
+        isRunning={isRunning}
         handleStart={handleStart}
         handleStop={handleStop}
         handleReset={handleReset}
